@@ -49,7 +49,8 @@ Simply run `fab test` from the root of the project.
 Run `fab deploy` - note that this depends on you having proper Docker Hub credentials or other means of authenticating with a private Docker repository
 
 ## Dev Commentary and TODOs
-Additional thoughts if improvement
+Additional thoughts of improvement
+
 ### TODOs
  * Extend the Flask App with forms and templates, accessible through a browser.
 

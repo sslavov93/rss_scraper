@@ -131,3 +131,5 @@ dmypy.json
 .direnv/
 .idea/
 celerybeat-schedule.db
+.DS_Store
+
