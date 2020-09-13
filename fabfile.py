@@ -20,7 +20,7 @@ def docs(context):
 
 @task
 def serve(context):
-    run("python3 manage.py runserver")
+    run("flask run")
 
 
 @task

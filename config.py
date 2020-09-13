@@ -73,7 +73,7 @@ class DevConfig(Config):
 
 
 class ProdConfig(Config):
-    broker_url = "pyamqp://user:password@localhost:5672//"
+    broker_url = "pyamqp://user:password@rabbitmq:5672//"
 
     beat_schedule = {
         "regular_scrape": {

@@ -31,7 +31,7 @@ services:
       - storage
       - queue
     links:
-      - "storage:postgres"
+      - storage
       - queue
 
 volumes:
