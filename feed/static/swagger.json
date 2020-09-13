@@ -1,0 +1,472 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "RSS Feed Aggregator service. Automatically scrapes and persists new posts, which are accessible through an API.",
+    "version": "1.0.0",
+    "title": "RSS-Feed-Aggregator",
+    "contact": {
+      "email": "sslavov93@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "127.0.0.1:5000",
+  "basePath": "/api",
+  "security": [
+    {"basicAuth": []}
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User Management"
+    },
+    {
+      "name": "Feeds",
+      "description": "Everything related to feed administration"
+    },
+    {
+      "name": "Feed Items",
+      "description": "Everything related to single feed item administration"
+    }
+  ],
+  "schemes": ["http"],
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register a new user",
+        "description": "",
+        "operationId": "register",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User account authentication credentials",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserCredentials"
+            }
+          }
+        ],
+        "responses": {
+          "400": {"description": ""},
+          "201": {"description": "Successful Operation",
+            "schema": {
+              "$ref": "#/definitions/SuccessfulRegister"
+            }
+          }
+        }
+      }
+    },
+    "/feeds": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Get all feeds",
+        "description": "Gets a list of all feeds that are being scraped",
+        "operationId": "get_all_feeds",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Feed"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feeds/follow": {
+      "post": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Follow a Feed",
+        "description": "Subscribes a user to a specific feed",
+        "operationId": "follow_feed",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ID of feed to subscribe to",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FeedRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {"description": "User has successfully subscribed to specified feed"},
+          "400": {"description": "Missing parameter in request body"},
+          "404": {"description": "Feed id does not exist in the database"},
+          "409": {"description": "User is already subscribed to feed"}
+        }
+      }
+    },
+    "/feeds/unfollow": {
+      "delete": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Unfollow a Feed",
+        "description": "Unubscribes a user from a specific feed",
+        "operationId": "unfollow_feed",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ID of feed to unsubscribe from",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FeedRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {"description": "User has successfully subscribed to specified feed"},
+          "400": {"description": "Missing parameter in request body"},
+          "404": {"description": "Feed id does not exist in the database"},
+          "409": {"description": "User is not subscribed to feed"}
+        }
+      }
+    },
+    "/my-feeds": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Get all feeds that a user is subscribed to",
+        "description": "Gets a list of all feeds that the current user is subscribed to",
+        "operationId": "get_all_user_subscribed_feeds",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Feed"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my-feeds/new": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Get unread items",
+        "description": "Get aggregated unread items from all feeds user is subscribed to",
+        "operationId": "get_unread_items_from_all_feeds",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Aggregated unread feed items",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/FeedItem"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my-feeds/old": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Get read items",
+        "description": "Get aggregated read items from all feeds user is subscribed to",
+        "operationId": "get_read_items_from_all_feeds",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Aggregated unread feed items",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/FeedItem"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my-feeds/{feed_id}/new": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Get unread items from specific feed",
+        "description": "Get unread items from the specified feed if the user is subscribed",
+        "operationId": "get_unread_items_from_feed",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "feed_id",
+            "in": "path",
+            "description": "ID of feed to get items, still unread by the user",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aggregated unread feed items",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/FeedItem"
+              }
+            }
+          },
+          "404": {"description": "Feed id does not exist in the database"}
+        }
+      }
+    },
+    "/my-feeds/{feed_id}/old": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Get read items from specific feed",
+        "description": "Get read items from the specified feed if the user is subscribed",
+        "operationId": "get_read_items_from_feed",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "feed_id",
+            "in": "path",
+            "description": "ID of feed to get items, already read by the user",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aggregated unread feed items",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/FeedItem"
+              }
+            }
+          },
+          "404": {"description": "Feed id does not exist in the database"}
+        }
+      }
+    },
+    "/items/{item_id}/read": {
+      "post": {
+        "tags": [
+          "Feed Items"
+        ],
+        "summary": "Reed a feed item",
+        "description": "Marks a single item as read. This removes it from Unread Item searches and adds it to Read item searches.",
+        "operationId": "read_feed_item",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "description": "ID of feed item to mark as read",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "204": {"description": "Successful Operation"},
+          "404": {"description": "Item id does not exist in the database"}
+        }
+      }
+    },
+    "/items/read-multiple": {
+      "post": {
+        "tags": [
+          "Feed Items"
+        ],
+        "summary": "Reed multiple feed items",
+        "description": "Marks a list of feed items as read. This removes them from Unread Item searches and adds them to Read item searches.",
+        "operationId": "read_feed_item",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "item_ids",
+            "in": "path",
+            "description": "ID of feed item to mark as read",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {"description": "Successful Operation"}
+        }
+      }
+    },
+    "/my-feeds/{feed_id}/update": {
+      "post": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Update database with newly posted items from feed",
+        "description": "Manually trigger a background scraping job that scrapes specified feed for new items",
+        "operationId": "refresh_single_feed",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "feed_id",
+            "in": "path",
+            "description": "ID of feed to scrape and persist new items from",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Acknowledgement that background job has started with reference job ID",
+            "schema": {
+              "$ref": "#/definitions/CeleryTaskID"
+            }
+          },
+          "404": {
+            "description": "Feed id does not exist in the database"
+          }
+        }
+      }
+    },
+    "/my-feeds/update": {
+      "post": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Update database with newly posted items from all feeds that the user follows",
+        "description": "Manually trigger a background scraping job that scrapes all user subscribed feeds for new items",
+        "operationId": "refresh_all_user_feeds",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "202": {
+            "description": "Acknowledgement that background job has started with reference job ID",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CeleryTaskID"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    }
+  },
+  "definitions": {
+    "UserCredentials": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": {"type": "string", "example": "user"},
+        "password": {"type": "string", "example": "pass"}
+      }
+    },
+    "FeedRequest": {
+      "type": "object",
+      "required": ["feed_id"],
+      "properties": {
+        "feed_id": {"type": "string", "example": "1"}
+      }
+    },
+    "Feed": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "integer"},
+        "url": {"type": "string"}
+      }
+    },
+    "FeedItem": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "integer"},
+        "url": {"type": "string"},
+        "title": {"type": "string"},
+        "description": {"type": "string"},
+        "published": {"type": "string"}
+      }
+    },
+    "SuccessfulRegister": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "CeleryTaskID": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+version: '3.0'
+
+services:
+  storage:
+    container_name: postgres
+    image: postgres:latest
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "dbpw"
+      POSTGRES_DB: "feedaggregator"
+    ports:
+      - 5432:5432
+
+  queue:
+    container_name: rabbitmq
+    image: rabbitmq:latest
+    ports:
+      - 5672:5672
+
+  app:
+    build: .
+    image: scraper:latest
+    container_name: scraper
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+    depends_on:
+      - storage
+      - queue
+    links:
+      - "storage:postgres"
+      - queue
+
+volumes:
+  # for persistence between restarts
+  db_data: {}
