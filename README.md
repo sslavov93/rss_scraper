@@ -1,4 +1,5 @@
 # RSS Feed Aggregator
+A persistent feed aggregation API
 
 ## High Level Overview
 This app has two main modules
@@ -10,11 +11,12 @@ This app has two main modules
 Utilizes Celery Beat's periodic execution capabilities to frequently download feed data, specified under `feeds` in `config.py`.
 Every time the task is executed, it calls an instance of a parser (defined in `default_scraper.py`).
 It handles the download, parsing and persistence of new feed items.
-Each feed item's time of publication is checked and the Feeds's `Last Updated` metadata is updated in the Database, according to the most recent published FeedItem.
+Each feed item's time of publication is checked and the Feeds's 'LastUpdated' metadata is updated in the Database, according to the most recent published FeedItem.
 
 ### The User-Facing Application - `feed/`
-A Flask-based API that provides the user several methods to manage feed item subscriptions and read/unread feed items.
-It handles delivery of feed items 
+A Flask-based API that provides several methods for feed subscriptions and feed posts.
+It handles the management of a user's personally subscribed feeds as well as searches of read/unread feed posts.
+All operations require a basic form of authentication
 
 ## Pre-requisites and External Dependencies
  1. Python 3 - this project assumes [Python 3.7](https://www.python.org/downloads/) is installed
