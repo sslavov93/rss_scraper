@@ -31,7 +31,7 @@
       "description": "Everything related to single feed item administration"
     }
   ],
-  "schemes": ["http"],
+  "schemes": ["https", "http"],
   "paths": {
     "/users": {
       "post": {

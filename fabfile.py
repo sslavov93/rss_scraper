@@ -20,7 +20,8 @@ def docs(context):
 
 @task
 def serve(context):
-    run("flask run --host=0.0.0.0")
+    # No need to generate a self-signed cert - it's still gonna display a warning
+    run("flask run --host=0.0.0.0 --cert=adhoc")
 
 
 @task
