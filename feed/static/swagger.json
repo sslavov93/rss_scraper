@@ -377,14 +377,17 @@
           }
         ],
         "responses": {
-          "202": {
+          "200": {
             "description": "Acknowledgement that background job has started with reference job ID",
             "schema": {
-              "$ref": "#/definitions/CeleryTaskID"
+              "$ref": "#/definitions/UpdateResponse"
             }
           },
           "404": {
             "description": "Feed id does not exist in the database"
+          },
+          "500": {
+            "description": "Problem with parsing and persisting the new feed posts"
           }
         }
       }
@@ -406,7 +409,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/CeleryTaskID"
+                "$ref": "#/definitions/UpdateResponse"
               }
             }
           }
@@ -460,10 +463,13 @@
         }
       }
     },
-    "CeleryTaskID": {
+    "UpdateResponse": {
       "type": "object",
       "properties": {
-        "task": {
+        "feed_id": {
+          "type": "string"
+        },
+        "status": {
           "type": "string"
         }
       }

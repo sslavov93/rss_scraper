@@ -22,9 +22,13 @@ def scrape(self):
 
 
 @celery.task(bind=True, name="scrape_single", retry_kwargs={'max_retries': 5}, retry_backoff=5.0, retry_jitter=True)
-def scrape_single(self, feed, from_app=False):
+def scrape_single(self, feed, from_app=False, no_op=False):
     if from_app:
         logger.info("Execution triggered from Flask App")
+    if no_op:
+        if feed.get('url') in FORBIDDEN:
+            FORBIDDEN.remove(feed.get('url'))
+        return
     try:
         scraper = Scraper(feed)
         feed_items = scraper.parse()

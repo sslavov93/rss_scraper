@@ -93,10 +93,7 @@ class Scraper:
         except ConnectionError as err:
             self.logger.error(f"Connection for url '{self.feed.url}' not available. Aborting.", err)
             raise err
-        except AttributeError as err:
-            self.logger.error(f"Problem parsing data for feed '{self.feed.url}'", err)
-            raise err
-        except KeyError as err:
+        except (AttributeError, KeyError) as err:
             self.logger.error(f"Problem parsing data for feed '{self.feed.url}'", err)
             raise err
         except Exception as err:

@@ -1,6 +1,7 @@
 import json
 from werkzeug.exceptions import HTTPException
 from feed import db
+from feed.celery_periodic.scraper import Scraper
 from feed.models import Feed, User, Follows, FeedItem, Unread, Read
 from flask import request, g
 from feed import auth
@@ -234,8 +235,15 @@ def refresh_single_feed(feed_id):
     if not feed:
         log_and_raise(app.logger, FeedNotFound("Feed id not found", 404, payload=request.json))
 
-    task = scrape_single.delay(feed_url=feed.url, from_app=True)
-    return jsonify({'task': str(task.id)}), 202
+    try:
+        scraper = Scraper({"url": feed.url, "parser": feed.parser, "time_format": feed.time_format})
+        feed_items = scraper.parse()
+        scraper.persist(feed_items)
+    except Exception:
+        raise InternalServerError("There was a problem updating the requested feed", 500, payload=request.json)
+    else:
+        scrape_single.delay(feed_url={"url": feed.url}, from_app=True, no_op=True)
+        return jsonify({'message': 'Update successful'}), 200
 
 
 @app.route("/api/my-feeds/update", methods=["POST"])
@@ -245,10 +253,17 @@ def refresh_all_user_feeds():
     feeds = Feed.query.filter(Feed.id.in_([item.feed_id for item in follows])).all()
     update_tasks = []
     for feed in feeds:
-        task = scrape_single.delay(feed_url=feed.url, from_app=True)
-        update_tasks.append({'task': str(task.id)})
+        try:
+            scraper = Scraper({"url": feed.url, "parser": feed.parser, "time_format": feed.time_format})
+            feed_items = scraper.parse()
+            scraper.persist(feed_items)
+        except Exception:
+            update_tasks.append({"feed_id": f"{feed.id}", "status": "FAILED"})
+        else:
+            scrape_single.delay(feed_url={"url": feed.url}, from_app=True, no_op=True)
+            update_tasks.append({"feed_id": f"{feed.id}", "status": "SUCCESSFUL"})
 
-    return jsonify(update_tasks), 202
+    return jsonify(update_tasks), 200
 
 
 @auth.verify_password

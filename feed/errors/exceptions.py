@@ -38,6 +38,10 @@ class FeedAlreadyFollowed(BaseErrorResponse):
     pass
 
 
+class InternalServerError(BaseErrorResponse):
+    pass
+
+
 @app.errorhandler(BaseErrorResponse)
 def handle_error(error):
     """Constructs a flask.Response object in the event when an exception is raised
