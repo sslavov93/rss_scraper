@@ -4,6 +4,7 @@ celery = None
 
 
 def make_celery(main_flask_app):
+    """Generates the celery object and ties it to the main Flask app object"""
     celery = Celery(main_flask_app.import_name, include=["feed.celery_periodic.tasks"])
 
     if main_flask_app.config["ENV"] == "production":

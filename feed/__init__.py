@@ -16,7 +16,7 @@ envs = {
 
 
 def create_app():
-    """Construct the core application."""
+    """Construct the main Flask application with all submodules and dependencies"""
     app = Flask(__name__, instance_relative_config=False)
 
     app.config.from_object(envs.get(app.config.get("ENV"), "config.DevConfig"))

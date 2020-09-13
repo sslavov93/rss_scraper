@@ -1,10 +1,8 @@
 import os
+import webbrowser
 
 from fabric import task
 from invoke import run
-
-from feed import create_app, db
-from sqlalchemy_utils import database_exists, create_database, drop_database
 
 
 @task
@@ -15,17 +13,18 @@ def test(context, env='testing'):
 
 @task
 def docs(context):
-    pass
+    webbrowser.open("http://localhost:1337/swagger", new=2)
 
 
 @task
 def serve(context):
     # No need to generate a self-signed cert - it's still gonna display a warning
-    run("flask run --host=0.0.0.0 --cert=adhoc")
+    run("flask run --host=0.0.0.0 --port=1337")
 
 
 @task
 def init(context, env="development"):
+    run("python3 manage.py db init")
     init_rabbitmq()
     init_db()
 
@@ -40,6 +39,9 @@ def init_rabbitmq(context, env="development"):
 @task
 def init_db(context, env='development'):
     from tests.utils import generate_setup
+    from feed import create_app, db
+    from sqlalchemy_utils import database_exists, create_database, drop_database
+
     os.environ['FLASK_ENV'] = env
 
     url = "postgresql://postgres:dbpw@localhost:5432/feedaggregator"

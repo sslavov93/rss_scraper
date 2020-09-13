@@ -7,6 +7,7 @@ from feed.models import User, Feed, Follows, FeedItem, Unread, Read
 
 
 def generate_setup():
+    """Used to initially populate the database with sample data"""
     user1 = User(username="user", password=pbkdf2_sha256.hash("pass"))
     user2 = User(username="user2", password=pbkdf2_sha256.hash("pass"))
     user3 = User(username="user3", password=pbkdf2_sha256.hash("pass"))

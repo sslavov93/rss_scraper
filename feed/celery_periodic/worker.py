@@ -1,3 +1,5 @@
+"""This file attaches the celery runner to the main flask app"""
+
 from feed import celery_periodic, create_app
 
 

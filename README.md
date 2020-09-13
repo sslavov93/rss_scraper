@@ -39,23 +39,26 @@ It handles delivery of feed items
  1. Run `docker-compose up`.
  2. ONLY THE FIRST TIME, run `fab initdb` - this will populate the database with some sample data
 
-For a more visual example of the API, access `localhost:5000/swagger` - it's interactive and allows to test requests on the fly
+For a more visual example of the API, open `http://localhost:1337/swagger` - it's interactive and allows to test requests on the fly
 
 ### Testing
-
+With the `postgres` container running,
 Simply run `fab test` from the root of the project.
 
 ## Deployment
-Run `fab deploy` - note that this depends on you having proper Docker Hub credentials or other means of authenticating with a private Docker repository
+The application is in a state in which newly committed changes can be picked up from a build system (Jenkins, Travis, etc.) and then fresh Docker images can be spun up but this is way beyond the purpose of this exercise
 
-## Dev Commentary and TODOs
+## Developer Comments and TODOs
 Additional thoughts of improvement
 
 ### TODOs
  * Extend the Flask App with forms and templates, accessible through a browser.
 
-### Commentary
+### Comments
  * In a production environment, I would expect a credential service that takes care of the environment to be populated with the proper variables, which this app will utilize.
  * For better partition tolerance and higher maintainability, the Celery workers should be separated from the main App container (+ it makes the logging easier to scan through)
  * There are some commands that are executed on the `rabbitmq` container as part of the `fab init` task. This is a hack - in a production environment I would expect this to be provisioned and maintained elsewhere, so the feed aggregator app only consumes it.
  * No Git branches have been used, to avoid dealing with unnecessary merge conflicts, since I'm the only one maintaining this project (for now). In an actual prod environment this is unacceptable and bears a huge risk.
+ 
+In general, the design of this app is not very robust the more feeds and feed items are present because the Read / Unread searches are a big bottleneck.
+In practice, what I will do, is rely on some more elaborate message broker system, which the clients will be responsible for pulling new items from.

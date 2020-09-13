@@ -23,8 +23,8 @@ services:
     build: .
     image: scraper:latest
     container_name: scraper
-    ports:
-      - 5000:5000
+    expose:
+      - 5000
     volumes:
       - .:/app
     depends_on:
@@ -33,6 +33,15 @@ services:
     links:
       - storage
       - queue
+
+  nginx:
+    build: ./nginx
+    image: rss_nginx:latest
+    container_name: nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - app
 
 volumes:
   # for persistence between restarts

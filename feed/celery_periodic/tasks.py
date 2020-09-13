@@ -2,7 +2,7 @@ from celery.utils.log import get_task_logger
 from sqlalchemy.exc import SQLAlchemyError
 
 from feed import celery_periodic
-from feed.celery_periodic.default_scraper import DefaultParser
+from feed.celery_periodic.scraper import Scraper
 
 celery = celery_periodic.celery
 logger = get_task_logger(__name__)
@@ -26,8 +26,9 @@ def scrape_single(self, feed, from_app=False):
     if from_app:
         logger.info("Execution triggered from Flask App")
     try:
-        parser = DefaultParser(feed)
-        parser.persist()
+        scraper = Scraper(feed)
+        feed_items = scraper.parse()
+        scraper.persist(feed_items)
         url = feed.get('url')
         if url in FORBIDDEN:
             FORBIDDEN.remove(url)
