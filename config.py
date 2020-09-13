@@ -2,9 +2,13 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 
 class Config:
-    # backend = "rpc://"
-    broker_url = "pyamqp://user:password@localhost:5672//"
+    # -------- Celery --------
+    broker_username = "user"
+    broker_password = "password"
+    broker_hostname = "localhost"
+    broker_port = "5672"
 
+    broker_url = f"pyamqp://{broker_username}:{broker_password}@{broker_hostname}:{broker_port}//"
     beat_max_loop_interval = 600
     beat_schedule = {
         "regular_scrape": {
@@ -29,12 +33,18 @@ class Config:
         },
     ]
 
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:dbpw@localhost:5432/feedaggregator"
+    # -------- Postgres --------
+    PG_USER = "postgres"
+    PG_PASSWORD = "dbpw"
+    PG_HOST = "localhost"
+    PG_PORT = "5432"
+    PG_DBNAME = "feedaggregator"
+
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DBNAME}"
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    SECRET_KEY = "totally_secret"
-
+    # -------- Swagger API Blueprint --------
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.json'
     SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
@@ -45,9 +55,17 @@ class Config:
         }
     )
 
+    SECRET_KEY = "totally_secret"
+
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:dbpw@localhost:5432/feedaggregator_test"
+    PG_USER = "postgres"
+    PG_PASSWORD = "dbpw"
+    PG_HOST = "localhost"
+    PG_PORT = "5432"
+    PG_DBNAME = "feedaggregator_test"
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DBNAME}"
+    # SQLALCHEMY_DATABASE_URI = "postgresql://postgres:dbpw@localhost:5432/feedaggregator_test"
 
 
 class DevConfig(Config):
@@ -79,4 +97,4 @@ class ProdConfig(Config):
     ]
 
     SQLALCHEMY_DATABASE_URI = "postgresql://postgres:dbpw@postgres:5432/feedaggregator"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # SQLALCHEMY_TRACK_MODIFICATIONS = False

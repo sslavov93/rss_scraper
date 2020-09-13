@@ -30,8 +30,12 @@ It handles delivery of feed items
  1. Clone the repository
  2. Run `pip3 install -r requirements.txt` to download the project's dependencies
 
+### First time setup
+ 1. In a new terminal window run `docker-compose run queue`
+ 2. In a new terminal window run `docker-compose run storage`
+ 3. In a new terminal window run `fab init` - this sets up permissions with the queue and pre-populates the database
 
-## Runing the app setup
+## Runing the App
  1. Run `docker-compose up`.
  2. ONLY THE FIRST TIME, run `fab initdb` - this will populate the database with some sample data
 
@@ -50,5 +54,7 @@ Additional thoughts if improvement
  * Extend the Flask App with forms and templates, accessible through a browser.
 
 ### Commentary
- * For better pertition tolerance and higher maintainability, the Celery workers should be separated from the main App container
- 
+ * In a production environment, I would expect a credential service that takes care of the environment to be populated with the proper variables, which this app will utilize.
+ * For better partition tolerance and higher maintainability, the Celery workers should be separated from the main App container
+ * There are some commands that are executed on the `rabbitmq` container as part of the `fab init` task. This is a hack - in a production environment I would expect this to be provisioned and maintained elsewhere, so the feed aggregator app only consumes it.
+ * No Git branches have been used, to avoid dealing with unnecessary merge conflicts, since I'm the only one maintaining this project (for now). In an actual prod environment this is unacceptable and bears a huge risk.
