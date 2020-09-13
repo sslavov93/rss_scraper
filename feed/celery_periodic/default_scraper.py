@@ -14,12 +14,21 @@ class DefaultParser:
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
 
-    def __init__(self, feed_url):
-        feeds = Feed.query.filter_by(url=feed_url).all()
-        if len(feeds) != 1:
+    def __init__(self, feed):
+        url = feed.get("url")
+        feeds = Feed.query.filter_by(url=url).all()
+        if len(feeds) > 1:
             msg = "More than one entry for feed URL found. Aborting."
             self.logger.error(msg, MultipleResultsFound)
             raise MultipleResultsFound(msg)
+        elif len(feeds) < 1:
+            now = datetime.utcnow()
+            dt = datetime(year=now.year, month=now.month, day=now.day,
+                          hour=now.hour, minute=now.minute, second=now.second, tzinfo=pytz.utc)
+
+            f = Feed(url=url, parser=feed.get("parser"), time_format=feed.get("time_format"), last_updated=dt)
+            db.session.add(f)
+            db.session.commit()
 
         self.feed = feeds[0]
 

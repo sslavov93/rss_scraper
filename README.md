@@ -55,6 +55,6 @@ Additional thoughts if improvement
 
 ### Commentary
  * In a production environment, I would expect a credential service that takes care of the environment to be populated with the proper variables, which this app will utilize.
- * For better partition tolerance and higher maintainability, the Celery workers should be separated from the main App container
+ * For better partition tolerance and higher maintainability, the Celery workers should be separated from the main App container (+ it makes the logging easier to scan through)
  * There are some commands that are executed on the `rabbitmq` container as part of the `fab init` task. This is a hack - in a production environment I would expect this to be provisioned and maintained elsewhere, so the feed aggregator app only consumes it.
  * No Git branches have been used, to avoid dealing with unnecessary merge conflicts, since I'm the only one maintaining this project (for now). In an actual prod environment this is unacceptable and bears a huge risk.
