@@ -21,7 +21,7 @@ services:
 
   app:
     build: .
-    image: feed_aggregator:latest
+    image: scraper:latest
     container_name: scraper
     ports:
       - 5000:5000

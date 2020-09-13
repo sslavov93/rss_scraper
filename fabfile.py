@@ -20,7 +20,7 @@ def docs(context):
 
 @task
 def serve(context):
-    run("flask run")
+    run("flask run --host=0.0.0.0")
 
 
 @task

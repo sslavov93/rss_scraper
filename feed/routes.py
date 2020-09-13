@@ -8,6 +8,11 @@ from feed.errors.exceptions import *
 from feed.celery_periodic.tasks import scrape_single
 
 
+@app.route('/')
+def hello():
+    return "Hello"
+
+
 @app.route('/api/users', methods=['POST'])
 def register():
     if request.json is None:
