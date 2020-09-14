@@ -1,4 +1,3 @@
-import os
 import webbrowser
 
 from fabric import task
@@ -17,10 +16,15 @@ def docs(context):
 
 @task
 def serve(context):
-    run("flask run --host=0.0.0.0 --port=5000")
+    run("flask run --host=127.0.0.1 --port=5000")
 
 
 @task
 def migratedb(context):
     run("python3 manage.py db migrate")
     run("python3 manage.py db upgrade")
+
+
+@task
+def initdb(context):
+    run("python3 manage.py init_db")

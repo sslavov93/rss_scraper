@@ -2,11 +2,10 @@ version: '3.0'
 
 services:
   storage:
-    build: docker/postgres
     container_name: postgres
-    image: rss_postgres:1.0.0
+    image: postgres:12.4
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - stor_vol:/var/lib/postgresql/data
     env_file:
       docker/prod.env
     ports:
@@ -23,7 +22,7 @@ services:
 
   app:
     build: .
-    image: scraper:1.0.0
+    image: rss_scraper:1.0.0
     container_name: scraper
     env_file:
       docker/prod.env
@@ -32,9 +31,6 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - storage
-      - queue
-    links:
       - storage
       - queue
 
@@ -49,4 +45,4 @@ services:
 
 volumes:
   # for persistence between restarts
-  db_data: {}
+  stor_vol: {}

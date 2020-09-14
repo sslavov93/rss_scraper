@@ -52,8 +52,7 @@ For a more visual example of the different operations the API provides, open `ht
 
 ## Runing the App
  1. Run `docker-compose up`.
- 2. Immediately after starting all the containers, the celery tasks start scraping the provided feeds
-    1. No need to pre-populate the database with any data.
+ 2. Run `fab initdb` - this will pre-populate the database with feeds to crawl from
 
 
 ## Environment and configuration

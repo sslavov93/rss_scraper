@@ -1,5 +1,7 @@
 import json
+
 from werkzeug.exceptions import HTTPException
+
 from feed import db
 from feed.celery_periodic.scraper import Scraper
 from feed.models import Feed, User, Follows, FeedItem, Unread, Read
@@ -7,11 +9,6 @@ from flask import request, g
 from feed import auth
 from feed.errors.exceptions import *
 from feed.celery_periodic.tasks import scrape_single
-
-
-@app.route('/')
-def hello():
-    return "Hello"
 
 
 @app.route('/api/users', methods=['POST'])
@@ -286,3 +283,8 @@ def internal_server_error(error):
     })
     response.content_type = "application/json"
     return response
+
+
+@app.route("/")
+def hello():
+    return "Hello there."

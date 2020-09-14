@@ -2,7 +2,6 @@ import pytz
 import requests
 from bs4 import BeautifulSoup
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm.exc import MultipleResultsFound
 
 from feed.models import FeedItem, Feed, Follows, Unread
 from feed import db
@@ -22,15 +21,7 @@ class Scraper:
 
     def __init__(self, feed):
         url = feed.get("url")
-        feeds = Feed.query.filter_by(url=url).all()
-
-        # Multiple entries found in the database for a given url - this indicates an error
-        if len(feeds) != 1:
-            msg = "Feed url is not unique. Aborting."
-            self.logger.error(msg, MultipleResultsFound)
-            raise MultipleResultsFound(msg)
-
-        self.feed = feeds[0]
+        self.feed = Feed.query.filter_by(url=url).first()
 
     @staticmethod
     def get_title(feed_item):

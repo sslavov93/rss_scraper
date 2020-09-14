@@ -1,6 +1,7 @@
 from celery.utils.log import get_task_logger
 from sqlalchemy.exc import SQLAlchemyError
 
+from config import feeds
 from feed import celery_periodic
 from feed.celery_periodic.scraper import Scraper
 
@@ -13,7 +14,7 @@ FORBIDDEN = set()
 
 @celery.task(bind=True, name="scrape")
 def scrape(self):
-    for rss_feed in celery.conf.feeds:
+    for rss_feed in feeds:
         if rss_feed['url'] not in FORBIDDEN:
             logger.info(f"Scraping feed {rss_feed['url']} for new items...")
             scrape_single.s(rss_feed).delay()

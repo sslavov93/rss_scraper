@@ -1,12 +1,8 @@
-from datetime import datetime
-
-import pytz
 from flask import Flask
 from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from feed import celery_periodic
-from config import feeds as f_init
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -32,11 +28,5 @@ def create_app():
     celery_periodic.celery = celery
 
     app.register_blueprint(app.config.get("SWAGGERUI_BLUEPRINT"), url_prefix=app.config.get("SWAGGER_URL"))
-
-    with app.app_context():
-        from . import routes
-        from feed.models import Feed
-
-        db.create_all()
 
     return app
