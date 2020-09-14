@@ -75,8 +75,6 @@ Additional thoughts of improvement
 
 ### TODOs
  * Extend the Flask App with forms and templates, accessible through a browser.
- * Fix the swagger request execution
-   * For some reason the curl requests the Swagger UI (accessible at [http://127.0.0.1:1337/swagger]()) won't execute, even though, if copied, the CURL request is properly executable from a separate terminal.
  * At the moment, the config objects (found in `config.py`) rely on Env Variables and build connection URLs from that. The file looks ugly, a better approach might be experimenting with yaml files and inheritance for different envs.
     
 ### Comments
