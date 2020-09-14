@@ -1,6 +1,4 @@
 from passlib.hash import pbkdf2_sha256
-from sqlalchemy import event
-
 from feed import db
 
 
@@ -121,20 +119,3 @@ class Read(db.Model):
 
     feed_id = db.Column(db.Integer, db.ForeignKey('feeds.id'))
     feed = db.relationship('Feed', backref=db.backref('reads', lazy=True))
-
-
-@event.listens_for(Feed.__table__, 'after_create')
-def insert_initial_values(*args, **kwargs):
-    from config import feeds
-    from datetime import datetime
-    import pytz
-
-    now = datetime.utcnow()
-    dt = datetime(year=now.year, month=now.month, day=now.day, hour=now.hour,
-                  minute=now.minute, second=now.second, tzinfo=pytz.utc)
-
-    for feed_object in feeds:
-        db.session.add(Feed(url=feed_object.get("url"), parser=feed_object.get("parser"),
-                            time_format=feed_object.get("time_format"), last_updated=dt))
-
-    db.session.commit()

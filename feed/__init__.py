@@ -39,16 +39,4 @@ def create_app():
 
         db.create_all()
 
-        # if not Feed.query.all():
-        #     for feed_object in f_init:
-        #         now = datetime.utcnow()
-        #         dt = datetime(year=now.year, month=now.month, day=now.day, hour=now.hour,
-        #                            minute=now.minute, second=now.second, tzinfo=pytz.utc)
-        #
-        #         feed = Feed(url=feed_object.get("url"), parser=feed_object.get("parser"),
-        #                     time_format=feed_object.get("time_format"), last_updated=dt)
-        #
-        #         db.session.add(feed)
-        # db.session.commit()
-
     return app
