@@ -25,19 +25,10 @@ class Scraper:
         feeds = Feed.query.filter_by(url=url).all()
 
         # Multiple entries found in the database for a given url - this indicates an error
-        if len(feeds) > 1:
-            msg = "More than one entry for feed URL found. Aborting."
+        if len(feeds) != 1:
+            msg = "Feed url is not unique. Aborting."
             self.logger.error(msg, MultipleResultsFound)
             raise MultipleResultsFound(msg)
-        # we don't have an entry in the database yet
-        elif len(feeds) < 1:
-            now = datetime.utcnow()
-            dt = datetime(year=now.year, month=now.month, day=now.day,
-                          hour=now.hour, minute=now.minute, second=now.second, tzinfo=pytz.utc)
-
-            f = Feed(url=url, parser=feed.get("parser"), time_format=feed.get("time_format"), last_updated=dt)
-            db.session.add(f)
-            db.session.commit()
 
         self.feed = feeds[0]
 

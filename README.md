@@ -2,21 +2,39 @@
 A persistent feed aggregation API
 
 ## High Level Overview
-This app has two main modules
-
+This app has two main modules:
 1. Aggregator
 2. User-facing Application
 
-### The Aggregator - `feed/celery_periodic/`
+### The Aggregator - `rss_scraper/feed/celery_periodic/`
 Utilizes Celery Beat's periodic execution capabilities to frequently download feed data, specified under `feeds` in `config.py`.
 Every time the task is executed, it calls an instance of a parser (defined in `default_scraper.py`).
 It handles the download, parsing and persistence of new feed items.
 Each feed item's time of publication is checked and the Feeds's 'LastUpdated' metadata is updated in the Database, according to the most recent published FeedItem.
 
-### The User-Facing Application - `feed/`
+### The User-Facing Application - `rss_scraper/feed/`
 A Flask-based API that provides several methods for feed subscriptions and feed posts.
 It handles the management of a user's personally subscribed feeds as well as searches of read/unread feed posts.
 All operations require a basic form of authentication
+
+## Deep Dive
+This app models Users, Feeds and FeedItems, as well as some relationships between them.
+`Users` can register, follow and unfollow `Feeds`, read new unread `FeedItems` and examine already read `FeedItems`.
+`Follows` shows which user follows which feed.
+`Read` and `Unread` show which feed item was read / unread from which user.
+All can be examined in more technical detail in `rss_feed/feed/models.py`
+
+Starting point - `config.Config.feeds` - this is where new feeds are declared - the program needs a valid feed URL, a Markup Parser to be used by the HTML parser library to extract necessary data and formatting of the date and time the feed post was published.
+Initial two feeds, that were provided were [Tweakers](https://feeds.feedburner.com/tweakers/mixed) and [Algemeen](http://www.nu.nl/rss/Algemeen). Their similarity lead to just one scraper class (`rss_scraper/feed/celery_periodic/scraper.py`) but in the event that other feeds with different characteristics are added, this class can be used as a base parent class and the difference in characteristics be overridden in a child class.
+
+Whenever the app detects newer posts (comparing with the last time a check was done, default for prod is 10 minutes), it writes them in a database.
+For each item it also creates unread relationships for each of the user that is following the feed that item was scraped from.
+
+Users can then request new unread feed_items, based on the feeds they follow and choose which item (or a collection of items) to mark* as read.
+  * mark as read - remove the `Unread` relationship between a specific item and a specific user and create a `Read` relationship. This is helpful for search queries based on whether the user wants new unread items or read items
+
+For a more visual example of the different operations the API provides, open `http://localhost:1337/swagger` - it's interactive and allows to test requests on the fly.
+
 
 ## Pre-requisites and External Dependencies
  1. Python 3 - this project assumes [Python 3.7](https://www.python.org/downloads/) is installed
@@ -32,30 +50,35 @@ All operations require a basic form of authentication
  1. Clone the repository
  2. Run `pip3 install -r requirements.txt` to download the project's dependencies
 
-### First time setup
- 1. In a new terminal window run `docker-compose run queue`
- 2. In a new terminal window run `docker-compose run storage`
- 3. In a new terminal window run `fab init` - this sets up permissions with the queue and pre-populates the database
-
 ## Runing the App
  1. Run `docker-compose up`.
- 2. ONLY THE FIRST TIME, run `fab initdb` - this will populate the database with some sample data
+ 2. Immediately after starting all the containers, the celery tasks start scraping the provided feeds
+    1. No need to pre-populate the database with any data.
 
-For a more visual example of the API, open `http://localhost:1337/swagger` - it's interactive and allows to test requests on the fly
+
+## Environment and configuration
+ * For this example, the production and development environment are the same, in a life scenario this will be, of course, separated
+ * Configuration is loaded from `config.py`, everything for the Testing and Development config is hardcoded.
+   * For the purposes of this exercise, the "production" values are copied in the docker images from a file called `docker/prod.env`
+    
+### Local Development Server
+With the containers running, in a separate terminal window run `fab serve` from the root of the project.
 
 ### Testing
-With the `postgres` container running,
-Simply run `fab test` from the root of the project.
+With the containers running, in a separate terminal window run `fab test` from the root of the project.
 
-## Deployment
-The application is in a state in which newly committed changes can be picked up from a build system (Jenkins, Travis, etc.) and then fresh Docker images can be spun up but this is way beyond the purpose of this exercise
+### Deployment
+The application should be in a state in which newly committed changes can be picked up from a build system (Jenkins, Travis, etc.) and then fresh Docker images can be spun up from the provided `docker-compose.yml` but this is way beyond the purpose of this exercise.
 
 ## Developer Comments and TODOs
 Additional thoughts of improvement
 
 ### TODOs
  * Extend the Flask App with forms and templates, accessible through a browser.
-
+ * Fix the swagger request execution
+   * For some reason the curl requests the Swagger UI (accessible at [http://127.0.0.1:1337/swagger]()) won't execute, even though, if copied, the CURL request is properly executable from a separate terminal.
+ * At the moment, the config objects (found in `config.py`) rely on Env Variables and build connection URLs from that. The file looks ugly, a better approach might be experimenting with yaml files and inheritance for different envs.
+    
 ### Comments
  * In a production environment, I would expect a credential service that takes care of the environment to be populated with the proper variables, which this app will utilize.
  * For better partition tolerance and higher maintainability, the Celery workers should be separated from the main App container (+ it makes the logging easier to scan through)

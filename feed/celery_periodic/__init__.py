@@ -2,17 +2,17 @@ from celery import Celery
 
 celery = None
 
+envs = {
+    "production": "config.ProdConfig",
+    "development": "config.DevConfig",
+    "testing": "config.TestConfig",
+}
 
 def make_celery(main_flask_app):
     """Generates the celery object and ties it to the main Flask app object"""
     celery = Celery(main_flask_app.import_name, include=["feed.celery_periodic.tasks"])
 
-    if main_flask_app.config["ENV"] == "production":
-        conf = "config.ProdConfig"
-    else:
-        conf = "config.DevConfig"
-
-    celery.config_from_object(conf)
+    celery.config_from_object(envs.get(main_flask_app.config.get("ENV"), "config.DevConfig"))
 
     task_base = celery.Task
 

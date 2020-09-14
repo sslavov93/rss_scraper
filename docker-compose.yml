@@ -3,26 +3,29 @@ version: '3.0'
 services:
   storage:
     container_name: postgres
-    image: postgres:latest
+    image: postgres:12.4
     volumes:
       - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "dbpw"
-      POSTGRES_DB: "feedaggregator"
+    env_file:
+      docker/prod.env
     ports:
       - 5432:5432
 
   queue:
+    build: docker/rabbitmq
     container_name: rabbitmq
-    image: rabbitmq:latest
+    image: rss_rabbitmq:1.0.0
+    env_file:
+      docker/prod.env
     ports:
       - 5672:5672
 
   app:
     build: .
-    image: scraper:latest
+    image: scraper:1.0.0
     container_name: scraper
+    env_file:
+      docker/prod.env
     expose:
       - 5000
     volumes:
@@ -35,8 +38,8 @@ services:
       - queue
 
   nginx:
-    build: ./nginx
-    image: rss_nginx:latest
+    build: docker/nginx
+    image: rss_nginx:1.0.0
     container_name: nginx
     ports:
       - 1337:80
