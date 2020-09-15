@@ -35,6 +35,7 @@ Users can then request new unread feed_items, based on the feeds they follow and
 
 For a more visual example of the different operations the API provides, open `http://localhost:1337/swagger` - it's interactive and allows to test requests on the fly.
 
+The flask server is used only while developing, for the production use case I used Gunicorn behind nginx's reverse proxy, even though I didn't set up HTTPS, because I'd get a browser warning because of the self-generated certificate anyway.
 
 ## Pre-requisites and External Dependencies
  1. Python 3 - this project assumes [Python 3.7](https://www.python.org/downloads/) is installed
