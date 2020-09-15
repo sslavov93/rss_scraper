@@ -80,6 +80,8 @@ Additional thoughts of improvement
 ### TODOs
  * Extend the Flask App with forms and templates, accessible through a browser.
  * At the moment, the config objects (found in `config.py`) rely on Env Variables and build connection URLs from that. The file looks ugly, a better approach might be experimenting with yaml files and inheritance for different envs.
+ * Add rate limiting capabilities to the app
+ 
     
 ### Comments
  * In a production environment, I would expect a credential service that takes care of the environment to be populated with the proper variables, which this app will utilize.
