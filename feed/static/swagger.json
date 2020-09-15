@@ -88,7 +88,8 @@
                 "$ref": "#/definitions/Feed"
               }
             }
-          }
+          },
+          "401": {"description": "User not authenticated"}
         }
       }
     },
@@ -120,6 +121,7 @@
         "responses": {
           "204": {"description": "User has successfully subscribed to specified feed"},
           "400": {"description": "Missing parameter in request body"},
+          "401": {"description": "User not authenticated"},
           "404": {"description": "Feed id does not exist in the database"},
           "409": {"description": "User is already subscribed to feed"}
         }
@@ -153,6 +155,7 @@
         "responses": {
           "204": {"description": "User has successfully subscribed to specified feed"},
           "400": {"description": "Missing parameter in request body"},
+          "401": {"description": "User not authenticated"},
           "404": {"description": "Feed id does not exist in the database"},
           "409": {"description": "User is not subscribed to feed"}
         }
@@ -178,7 +181,8 @@
                 "$ref": "#/definitions/Feed"
               }
             }
-          }
+          },
+          "401": {"description": "User not authenticated"}
         }
       }
     },
@@ -202,7 +206,8 @@
                 "$ref": "#/definitions/FeedItem"
               }
             }
-          }
+          },
+          "401": {"description": "User not authenticated"}
         }
       }
     },
@@ -226,7 +231,8 @@
                 "$ref": "#/definitions/FeedItem"
               }
             }
-          }
+          },
+          "401": {"description": "User not authenticated"}
         }
       }
     },
@@ -261,6 +267,7 @@
               }
             }
           },
+          "401": {"description": "User not authenticated"},
           "404": {"description": "Feed id does not exist in the database"}
         }
       }
@@ -296,6 +303,7 @@
               }
             }
           },
+          "401": {"description": "User not authenticated"},
           "404": {"description": "Feed id does not exist in the database"}
         }
       }
@@ -323,6 +331,7 @@
         ],
         "responses": {
           "204": {"description": "Successful Operation"},
+          "401": {"description": "User not authenticated"},
           "404": {"description": "Item id does not exist in the database"}
         }
       }
@@ -351,7 +360,8 @@
           }
         ],
         "responses": {
-          "204": {"description": "Successful Operation"}
+          "204": {"description": "Successful Operation"},
+          "401": {"description": "User not authenticated"}
         }
       }
     },
@@ -383,6 +393,7 @@
               "$ref": "#/definitions/UpdateResponse"
             }
           },
+          "401": {"description": "User not authenticated"},
           "404": {
             "description": "Feed id does not exist in the database"
           },
@@ -412,7 +423,8 @@
                 "$ref": "#/definitions/UpdateResponse"
               }
             }
-          }
+          },
+          "401": {"description": "User not authenticated"}
         }
       }
     }
