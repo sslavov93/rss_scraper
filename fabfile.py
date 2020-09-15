@@ -16,8 +16,7 @@ def docs(context):
 
 @task
 def serve(context):
-    run("gunicorn -b 127.0.0.1:5000 application:app")
-    # run("flask run --host=127.0.0.1 --port=5000")
+    run("flask run --host=127.0.0.1 --port=5000")
 
 
 @task
