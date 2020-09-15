@@ -239,7 +239,7 @@ def refresh_single_feed(feed_id):
     except Exception:
         raise InternalServerError("There was a problem updating the requested feed", 500, payload=request.json)
     else:
-        scrape_single.delay(feed_url={"url": feed.url}, from_app=True, no_op=True)
+        scrape_single.delay(feed={"url": feed.url}, from_app=True, no_op=True)
         return jsonify({'message': 'Update successful'}), 200
 
 
@@ -257,7 +257,7 @@ def refresh_all_user_feeds():
         except Exception:
             update_tasks.append({"feed_id": f"{feed.id}", "status": "FAILED"})
         else:
-            scrape_single.delay(feed_url={"url": feed.url}, from_app=True, no_op=True)
+            scrape_single.delay(feed={"url": feed.url}, from_app=True, no_op=True)
             update_tasks.append({"feed_id": f"{feed.id}", "status": "SUCCESSFUL"})
 
     return jsonify(update_tasks), 200

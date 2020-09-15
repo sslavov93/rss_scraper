@@ -70,6 +70,9 @@ With the containers running, in a separate terminal window run `fab test` from t
 ### Deployment
 The application should be in a state in which newly committed changes can be picked up from a build system (Jenkins, Travis, etc.) and then fresh Docker images can be spun up from the provided `docker-compose.yml` but this is way beyond the purpose of this exercise.
 
+### Cleanup
+Run `./scripts/cleanup.sh` - This gets rid of all the created containers, images and volumes
+
 ## Developer Comments and TODOs
 Additional thoughts of improvement
 
