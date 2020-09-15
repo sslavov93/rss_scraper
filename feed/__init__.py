@@ -29,4 +29,7 @@ def create_app():
 
     app.register_blueprint(app.config.get("SWAGGERUI_BLUEPRINT"), url_prefix=app.config.get("SWAGGER_URL"))
 
+    with app.app_context():
+        from . import routes
+
     return app

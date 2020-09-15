@@ -52,7 +52,8 @@ For a more visual example of the different operations the API provides, open `ht
 
 ## Runing the App
  1. Run `docker-compose up`.
- 2. Run `fab initdb` - this will pre-populate the database with feeds to crawl from
+ 2. **Important** The first time you start the app, run `fab initdb`
+    1. This will pre-populate the database with feeds to crawl from
 
 
 ## Environment and configuration
